@@ -1,8 +1,12 @@
-import os 
+import os
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+
+db_mock = {
+  '250': "http://localhost:8000"
+}
 
 load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
@@ -17,6 +21,25 @@ def handle_message(m):
   print(m)
   a = chat_model.invoke(m)
   emit("answer", {"answer": a.content})
+
+@app.get('/validate_domain')
+def validate_domain():
+  id_char = request.args.get("id_char")
+  domain = request.args.get("domain")
+
+  valid_domain = db_mock[id_char] == domain
+
+  return { 'valid_domain': valid_domain}, 200
+
+@app.post('/new_token')
+def new_token():
+  fprint = request.args.get("fprint")
+  id_char = request.args.get("id_char")
+
+  generated_token = fprint + id_char
+
+  return { 'user_tkn': generated_token}, 200
+
 
 if __name__ == "__main__":
   socketio.run(app, debug=True)

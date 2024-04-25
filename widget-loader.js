@@ -1,11 +1,53 @@
 class FindorWidget {
-  constructor(agentURL) {
+  constructor(CharURL) {
+    const parts = CharURL.split('/')
+
+    this.fingerPrint = this.take_fingerprint()
     this.open = false;
-    this.agentURL = agentURL
-    this.initialise();
-    this.createStyles();
+    this.CharURL = CharURL
+    this.id_char = parts.pop()
+    this.domain = window.location.hostname
+    this.validateDomain()
   }
-  initialise() {
+
+  async validateDomain() {
+    console.log(`Dominio: ${this.domain}`)
+    const res = await fetch(`http://localhost:5000/validate_domain?id_char=${this.id_char}&domain=${this.domain}`)
+    const data = await res.json()
+    const validDomain = data['valid_domain']
+    console.log(`valid domain: ${validDomain}`)
+
+    if (validDomain) {
+      let token = localStorage.getItem("user_tkn")
+
+      if (!token) {
+        token = await this.generateNewToken()
+        console.log(`new token: ${token}`)
+        localStorage.setItem("user_tkn", token)
+      }
+
+      this.initialise(token);
+      this.createStyles();
+
+    }
+  }
+
+  async generateNewToken() {
+    const res = await fetch(`http://localhost:5000/new_token?fprint=${this.fingerPrint}&id_char=${this.id_char}`, {
+      method: 'POST'
+    })
+    const data = res.json()
+    return data['user_tkn']
+  }
+
+  async take_fingerprint() {
+    const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v4');
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    return result.visitorId;
+  }
+
+  initialise(token) {
     const container = document.createElement("div");
     container.style.position = "fixed";
     container.style.bottom = "30px";
@@ -25,7 +67,7 @@ class FindorWidget {
     buttonContainer.addEventListener("click", this.toggleOpen.bind(this));
 
     this.messageContainer = document.createElement("iframe");
-    this.messageContainer.src = this.agentURL
+    this.messageContainer.src = `${this.CharURL}?tkn=${token}&fprint=${this.fingerPrint}`
     this.messageContainer.style.border = 0
     this.messageContainer.classList.add("hidden", "message-container");
 
@@ -78,7 +120,7 @@ class FindorWidget {
 
         input[type="text"] {
           font-size:20px;
-        } 
+        }
     `.replace(/^\s+|\n/gm, "");
     document.head.appendChild(styleTag);
   }
@@ -98,7 +140,7 @@ class FindorWidget {
 }
 
 
-function initChatWidget(agentURL) {
-  new FindorWidget(agentURL);
+function initChatWidget(CharURL) {
+  new FindorWidget(CharURL);
 }
-initChatWidget(Findor.AgentURL);
+initChatWidget(Findor.CharURL);
