@@ -1,8 +1,6 @@
 class FindorWidget {
   constructor(CharURL) {
-    console.log("updated")
     const parts = CharURL.split('/')
-
     this.open = false;
     this.CharURL = CharURL
     this.id_char = parts.pop()
@@ -11,6 +9,8 @@ class FindorWidget {
   }
 
   async validateDomain() {
+    await this.take_fingerprint()
+
     console.log(`Dominio: ${this.domain}`)
     const res = await fetch(`http://localhost:5000/validate_domain?id_char=${this.id_char}&domain=${this.domain}`)
     const data = await res.json()
@@ -33,9 +33,8 @@ class FindorWidget {
   }
 
   async generateNewToken() {
-    const fingerPrint = await this.take_fingerprint()
 
-    const res = await fetch(`http://localhost:5000/new_token?fprint=${fingerPrint}&id_char=${this.id_char}`, {
+    const res = await fetch(`http://localhost:5000/new_token?fprint=${this.fingerPrint}&id_char=${this.id_char}`, {
       method: 'POST'
     })
     const data = await res.json()
@@ -44,27 +43,10 @@ class FindorWidget {
   }
 
   async take_fingerprint() {
-    console.log('atualizado com sucesso')
     const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v4');
-    console.log(FingerprintJS)
     const fp = await FingerprintJS.load();
-    console.log(fp)
     const result = await fp.get();
-    console.log(result)
     return result.visitorId;
-    // let id = null
-    // const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
-    //     .then(FingerprintJS => FingerprintJS.load())
-
-    //   // Get the visitor identifier when you need it.
-    //   fpPromise
-    //     .then(fp => fp.get())
-    //     .then(result => {
-    //       // This is the visitor identifier:
-    //       const visitorId = result.visitorId
-    //       id = visitorId
-    //     })
-    // return id
   }
 
   initialise(token) {
