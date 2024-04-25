@@ -2,7 +2,6 @@ class FindorWidget {
   constructor(CharURL) {
     const parts = CharURL.split('/')
 
-    this.take_fingerprint()
     this.open = false;
     this.CharURL = CharURL
     this.id_char = parts.pop()
@@ -11,6 +10,7 @@ class FindorWidget {
   }
 
   async validateDomain() {
+    await this.take_fingerprint()
     console.log(`Dominio: ${this.domain}`)
     const res = await fetch(`http://localhost:5000/validate_domain?id_char=${this.id_char}&domain=${this.domain}`)
     const data = await res.json()
