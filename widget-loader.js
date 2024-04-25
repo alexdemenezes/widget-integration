@@ -11,6 +11,8 @@ class FindorWidget {
   }
 
   async validateDomain() {
+    const fingerPrint = await this.take_fingerprint()
+
     console.log(`Dominio: ${this.domain}`)
     const res = await fetch(`http://localhost:5000/validate_domain?id_char=${this.id_char}&domain=${this.domain}`)
     const data = await res.json()
@@ -21,18 +23,17 @@ class FindorWidget {
       let token = localStorage.getItem("user_tkn")
 
       if (!token) {
-        token = await this.generateNewToken()
+        token = await this.generateNewToken(fingerPrint)
         localStorage.setItem("user_tkn", token)
       }
 
-      this.initialise(token);
+      this.initialise(token, fingerPrint);
       this.createStyles();
 
     }
   }
 
-  async generateNewToken() {
-    const fingerPrint = await this.take_fingerprint()
+  async generateNewToken(fingerPrint) {
     this.fingerPrint = fingerPrint
     const res = await fetch(`http://localhost:5000/new_token?fprint=${fingerPrint}&id_char=${this.id_char}`, {
       method: 'POST'
@@ -50,7 +51,7 @@ class FindorWidget {
 
   }
 
-  initialise(token) {
+  initialise(token, fingerPrint) {
     const container = document.createElement("div");
     container.style.position = "fixed";
     container.style.bottom = "30px";
@@ -70,7 +71,7 @@ class FindorWidget {
     buttonContainer.addEventListener("click", this.toggleOpen.bind(this));
 
     this.messageContainer = document.createElement("iframe");
-    this.messageContainer.src = `${this.CharURL}?tkn=${token}&fprint=${this.fingerPrint}`
+    this.messageContainer.src = `${this.CharURL}?tkn=${token}&fprint=${fingerPrint}`
     this.messageContainer.style.border = 0
     this.messageContainer.classList.add("hidden", "message-container");
 
