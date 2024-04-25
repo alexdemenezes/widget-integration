@@ -1,5 +1,6 @@
 class FindorWidget {
   constructor(CharURL) {
+    console.log("updated")
     const parts = CharURL.split('/')
 
     this.open = false;
