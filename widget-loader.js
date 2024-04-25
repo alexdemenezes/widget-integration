@@ -21,7 +21,6 @@ class FindorWidget {
       let token = localStorage.getItem("user_tkn")
 
       if (!token) {
-        console.log(this.fingerPrint)
         token = await this.generateNewToken()
         console.log(`new token: ${token}`)
         localStorage.setItem("user_tkn", token)
@@ -35,6 +34,7 @@ class FindorWidget {
 
   async generateNewToken() {
     const fingerPrint = await this.take_fingerprint()
+
     const res = await fetch(`http://localhost:5000/new_token?fprint=${fingerPrint}&id_char=${this.id_char}`, {
       method: 'POST'
     })
