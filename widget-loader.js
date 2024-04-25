@@ -37,6 +37,7 @@ class FindorWidget {
       method: 'POST'
     })
     const data = res.json()
+    console.log(data)
     return data['user_tkn']
   }
 

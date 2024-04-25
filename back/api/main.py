@@ -1,17 +1,19 @@
 import os
 from flask import Flask, request
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 db_mock = {
-  '250': "http://localhost:8000"
+  '250': "127.0.0.1"
 }
 
 load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
+CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 chat_model = ChatOpenAI(temperature=0)
@@ -27,6 +29,7 @@ def validate_domain():
   id_char = request.args.get("id_char")
   domain = request.args.get("domain")
 
+  print(f"id_char: {id_char}, domain: {domain}")
   valid_domain = db_mock[id_char] == domain
 
   return { 'valid_domain': valid_domain}, 200
