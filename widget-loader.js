@@ -38,30 +38,33 @@ class FindorWidget {
     const res = await fetch(`http://localhost:5000/new_token?fprint=${fingerPrint}&id_char=${this.id_char}`, {
       method: 'POST'
     })
-    const data = res.json()
+    const data = await res.json()
     console.log(data)
     return data['user_tkn']
   }
 
   async take_fingerprint() {
-    // const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v4');
-    // console.log(FingerprintJS)
-    // const fp = await FingerprintJS.load();
-    // console.log(fp)
-    // const result = await fp.get();
-    // console.log(result)
-    // return result.visitorId;
-    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
-        .then(FingerprintJS => FingerprintJS.load())
+    console.log('atualizado com sucesso')
+    const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v4');
+    console.log(FingerprintJS)
+    const fp = await FingerprintJS.load();
+    console.log(fp)
+    const result = await fp.get();
+    console.log(result)
+    return result.visitorId;
+    // let id = null
+    // const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
+    //     .then(FingerprintJS => FingerprintJS.load())
 
-      // Get the visitor identifier when you need it.
-      fpPromise
-        .then(fp => fp.get())
-        .then(result => {
-          // This is the visitor identifier:
-          const visitorId = result.visitorId
-          console.log(visitorId)
-        })
+    //   // Get the visitor identifier when you need it.
+    //   fpPromise
+    //     .then(fp => fp.get())
+    //     .then(result => {
+    //       // This is the visitor identifier:
+    //       const visitorId = result.visitorId
+    //       id = visitorId
+    //     })
+    // return id
   }
 
   initialise(token) {
