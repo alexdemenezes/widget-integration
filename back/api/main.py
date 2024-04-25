@@ -39,6 +39,9 @@ def new_token():
   fprint = request.args.get("fprint")
   id_char = request.args.get("id_char")
 
+  print(fprint)
+  print(id_char)
+
   generated_token = fprint + id_char
 
   return { 'user_tkn': generated_token}, 200

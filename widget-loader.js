@@ -2,7 +2,7 @@ class FindorWidget {
   constructor(CharURL) {
     const parts = CharURL.split('/')
 
-    this.fingerPrint = this.take_fingerprint()
+    this.take_fingerprint()
     this.open = false;
     this.CharURL = CharURL
     this.id_char = parts.pop()
@@ -21,6 +21,7 @@ class FindorWidget {
       let token = localStorage.getItem("user_tkn")
 
       if (!token) {
+        console.log(this.fingerPrint)
         token = await this.generateNewToken()
         console.log(`new token: ${token}`)
         localStorage.setItem("user_tkn", token)
@@ -45,7 +46,7 @@ class FindorWidget {
     const FingerprintJS = await import('https://openfpcdn.io/fingerprintjs/v4');
     const fp = await FingerprintJS.load();
     const result = await fp.get();
-    return result.visitorId;
+    this.fingerPrint = result.visitorId;
   }
 
   initialise(token) {
