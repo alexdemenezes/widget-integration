@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 
 import { io } from "socket.io-client";
 
@@ -9,6 +10,8 @@ const URL = process.env.NEXT_PUBLIC_AI_API_DOMAIN ?? "http://localhost:5000";
 const socket = io(URL);
 
 export default function Chat() {
+
+  const router = useRouter();
 
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -46,6 +49,9 @@ export default function Chat() {
       addAnswer(res.answer);
     });
 
+    const { query } = router;
+    console.log(query)
+
     return () => {
       socket.off("answer");
     };
@@ -63,7 +69,7 @@ export default function Chat() {
                 return (
                   <div className="flex justify-start" key={m.toString()}>
                     <div
-                      className="bg-gray-100 rounded-lg px-4 py-3.5 max-w-[80%] 
+                      className="bg-gray-100 rounded-lg px-4 py-3.5 max-w-[80%]
                   "
                     >
                       <p
@@ -73,7 +79,7 @@ export default function Chat() {
                       </p>
                     </div>
                   </div>
-               
+
                 );
               } else {
                 return (

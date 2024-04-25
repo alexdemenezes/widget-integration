@@ -5,6 +5,7 @@ class FindorWidget {
     this.open = false;
     this.CharURL = CharURL
     this.id_char = parts.pop()
+    this.fingerPrint = ""
     this.domain = window.location.hostname
     this.validateDomain()
   }
