@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation'
 
 import { io } from "socket.io-client";
 
@@ -11,7 +11,13 @@ const socket = io(URL);
 
 export default function Chat() {
 
-  const router = useRouter();
+
+  const searchParams = useSearchParams()
+
+  const fprint = searchParams.get('fprint')
+  const token = searchParams.get('tkn')
+  console.log(fprint)
+  console.log(token)
 
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -48,9 +54,6 @@ export default function Chat() {
     socket.on("answer", (res) => {
       addAnswer(res.answer);
     });
-
-    const { query } = router;
-    console.log(query)
 
     return () => {
       socket.off("answer");

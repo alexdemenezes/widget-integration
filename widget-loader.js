@@ -3,44 +3,31 @@ class FindorWidget {
     const parts = CharURL.split('/')
 
     this.open = false;
+    this.domain = "https://company-gateway-dot-stage-findor-chat.uc.r.appspot.com/company"
     this.CharURL = CharURL
-    this.id_char = parts.pop()
-    this.fingerPrint = ""
-    this.domain = window.location.hostname
-    this.validateDomain()
+    this.uuid = parts.pop()
+    this.init()
   }
 
-  async validateDomain() {
+  async init() {
     const fingerPrint = await this.take_fingerprint()
 
-    console.log(`Dominio: ${this.domain}`)
-    const res = await fetch(`http://localhost:5000/validate_domain?id_char=${this.id_char}&domain=${this.domain}`)
+    const res = await fetch(`${this.domain}/validate_char_domain?uuid=${this.uuid}`)
     const data = await res.json()
-    const validDomain = data['valid_domain']
-    console.log(`valid domain: ${validDomain}`)
 
-    if (validDomain) {
-      let token = localStorage.getItem("user_tkn")
+    console.log(`allowed domain: ${data['allowed']}`)
+
+    if (data['allowed']) {
+      let token = localStorage.getItem("user_identifier")
 
       if (!token) {
-        token = await this.generateNewToken(fingerPrint)
-        localStorage.setItem("user_tkn", token)
+        localStorage.setItem("user_identifier", fingerPrint)
       }
 
-      this.initialise(token, fingerPrint);
+      this.initialise(fingerPrint);
       this.createStyles();
 
     }
-  }
-
-  async generateNewToken(fingerPrint) {
-    this.fingerPrint = fingerPrint
-    const res = await fetch(`http://localhost:5000/new_token?fprint=${fingerPrint}&id_char=${this.id_char}`, {
-      method: 'POST'
-    })
-    const data = await res.json()
-    console.log(data)
-    return data['user_tkn']
   }
 
   async take_fingerprint() {
@@ -51,7 +38,7 @@ class FindorWidget {
 
   }
 
-  initialise(token, fingerPrint) {
+  initialise(fingerPrint) {
     const container = document.createElement("div");
     container.style.position = "fixed";
     container.style.bottom = "30px";
@@ -71,7 +58,7 @@ class FindorWidget {
     buttonContainer.addEventListener("click", this.toggleOpen.bind(this));
 
     this.messageContainer = document.createElement("iframe");
-    this.messageContainer.src = `${this.CharURL}?tkn=${token}&fprint=${fingerPrint}`
+    this.messageContainer.src = `${this.CharURL}?user_identifier=${fingerPrint}`
     this.messageContainer.style.border = 0
     this.messageContainer.classList.add("hidden", "message-container");
 
